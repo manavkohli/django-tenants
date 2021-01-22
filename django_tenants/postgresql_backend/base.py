@@ -20,12 +20,18 @@ original_backend = import_module(ORIGINAL_BACKEND + '.base')
 
 EXTRA_SEARCH_PATHS = getattr(settings, 'PG_EXTRA_SEARCH_PATHS', [])
 
+SUPPORTS_MULTIPLE_TENANT_SCHEMAS = getattr(settings, 'SUPPORTS_MULTIPLE_TENANT_SCHEMAS', False)
+
 # from the postgresql doc
 SQL_IDENTIFIER_RE = re.compile(r'^[_a-zA-Z0-9]{1,63}$')
 SQL_SCHEMA_NAME_RESERVED_RE = re.compile(r'^pg_', re.IGNORECASE)
 
 
 def is_valid_schema_name(name):
+    if SUPPORTS_MULTIPLE_TENANT_SCHEMAS:
+        # TODO: actually use a new regex
+        return True
+
     return SQL_IDENTIFIER_RE.match(name) and not SQL_SCHEMA_NAME_RESERVED_RE.match(name)
 
 
